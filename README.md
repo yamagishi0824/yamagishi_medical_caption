@@ -68,7 +68,68 @@ data/
 - `cholec80`: 腹腔鏡下胆嚢摘出術（Cholecystectomy）動画のデータ。  
   本リポジトリのキャプション生成・VQA評価の中心データです。
 - `egosurgery`: 手術の一人称視点（egocentric）系データ。`images.zip` / `annotations.zip` / `gaze.zip` を含みます。
-- `pit`: 参照元 `../surgery-vid/data` に存在するディレクトリです（本リポジトリの主要スクリプトでは未使用）。
+- `pit`: 内視鏡下下垂体手術（endoscopic pituitary surgery, eTSA）の動画データ（PitVis-2023）。参照元 `../surgery-vid/data` に存在しますが、本リポジトリの主要スクリプトでは未使用です。
+
+## データセットの取得方法
+
+各データセットは再配布が制限されている（多くが研究目的限定・CC BY-NC-SA 4.0）ため、本リポジトリには含めず、各自で公式配布元から取得してください。取得後は「データ配置」の節に従って `data/` 配下に配置します。
+
+> 注意: いずれも臨床由来の医療データです。利用規約・ライセンス（多くは **非営利・研究目的限定**）を必ず確認し、被写体個人の再同定を試みないこと等の条件を遵守してください。
+
+### cholec80（腹腔鏡下胆嚢摘出術 動画 + アノテーション）
+
+- 配布元: University of Strasbourg の CAMMA 研究グループ <https://camma.unistra.fr/datasets/>
+- 取得方法: データセットページのリクエストフォームに記入して申請すると、ダウンロード手順が案内されます（即時DLではなく承認制）。
+- ライセンス: CC BY-NC-SA 4.0（非営利・研究目的）
+- 内容: 80症例の手術動画（25fps）、phase アノテーション（25fps）、tool presence アノテーション（1fps）
+- 引用: Twinanda et al., "EndoNet: A Deep Architecture for Recognition Tasks on Laparoscopic Videos", IEEE TMI, 2016
+- 本リポジトリで使うファイル: `phase_annotations/*.txt`, `tool_annotations/*.txt`
+
+### CholecSeg8k（cholecseg.zip / セグメンテーションマスク）
+
+Cholec80 から抽出した 17 動画・8,080 フレームにピクセル単位のセグメンテーション（13クラス）を付与した派生データセットです。`data/cholec80/cholecseg.zip` および `seg/` の元データになります。
+
+- 配布元（公式・Kaggle）: <https://www.kaggle.com/datasets/newslab/cholecseg8k>
+- ミラー（Hugging Face、参考）: <https://huggingface.co/datasets/minwoosun/CholecSeg8k>
+- 取得方法（Kaggle CLI 例）:
+
+  ```bash
+  # 事前に Kaggle アカウントと API トークン(~/.kaggle/kaggle.json)が必要
+  pip install kaggle
+  kaggle datasets download -d newslab/cholecseg8k -p data/cholec80/
+  # 取得した zip を本リポジトリの想定パスにあわせて配置/リネーム
+  # -> data/cholec80/cholecseg.zip
+  ```
+
+- ライセンス: CC BY-NC-SA 4.0（非営利・研究目的）
+- 引用: Hong et al., "CholecSeg8k: A Semantic Segmentation Dataset for Laparoscopic Cholecystectomy Based on Cholec80", 2020 (arXiv:2012.12453)
+
+### egosurgery（一人称視点 開放手術 動画）
+
+- 配布元: GitHub `Fujiry0/EgoSurgery` <https://github.com/Fujiry0/EgoSurgery>
+- 取得方法: リポジトリ記載の Google フォームに記入して申請すると、ダウンロードリンクが送付されます（承認制）。
+- ライセンス: CC BY-NC-SA 4.0（学術研究目的限定、商用不可）
+- 内容: EgoSurgery-Phase（phase アノテーション）、EgoSurgery-Tool（手術器具・手のバウンディングボックス）等。本リポジトリの `images.zip` / `annotations.zip` / `gaze.zip` に対応。
+- 引用: Fujii et al., "EgoSurgery-Phase", MICCAI 2024 / "EgoSurgery-Tool", arXiv:2406.03095
+
+### pit（内視鏡下下垂体手術 動画 / PitVis-2023）
+
+内視鏡下下垂体手術（endoscopic TransSphenoidal Approach, eTSA）の動画データセットです。MICCAI 2023 EndoVis のサブチャレンジ PitVis-2023 として公開されています。本リポジトリの主要スクリプトでは未使用です。
+
+- 配布元（UCL RDR / Figshare）: <https://rdr.ucl.ac.uk/articles/dataset/PitVis_Challenge_Endoscopic_Pituitary_Surgery_videos/26531686>（DOI: 10.5522/04/26531686）
+- 配布元（Hugging Face、ミラー）: <https://huggingface.co/datasets/UCL-WEISS/PitVis-2023>
+- 取得方法: 上記ポータルから直接ダウンロード可能。25動画（`video_{n}.mp4`）と step/instrument アノテーション（`annotations_{n}.csv`）、ラベル対応表（`map_steps.csv` / `map_instrument.csv`）、動画メタデータ等を含みます。
+- 補助スクリプト・ベースライン: <https://github.com/dreets/pitvis>
+- 引用: Das et al., "PitVis-2023 Challenge: Workflow Recognition in videos of Endoscopic Pituitary Surgery", 2024 (arXiv:2409.01184)
+
+### まとめ
+
+| データセット | 配布元 | 取得方法 | ライセンス |
+|---|---|---|---|
+| cholec80 | CAMMA (University of Strasbourg) | リクエストフォーム申請（承認制） | CC BY-NC-SA 4.0 |
+| CholecSeg8k | Kaggle (newslab/cholecseg8k) | 直接DL（要Kaggleアカウント） | CC BY-NC-SA 4.0 |
+| egosurgery | GitHub (Fujiry0/EgoSurgery) | Googleフォーム申請（承認制） | CC BY-NC-SA 4.0 |
+| pit（PitVis-2023） | UCL RDR / Hugging Face | 直接DL | （配布元の規約を確認） |
 
 ## パイプライン概要
 
