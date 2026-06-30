@@ -210,9 +210,3 @@ OPENAI_API_KEY=sk-... bash scripts/run_vqa_v3.sh
 - `scripts/run_vqa.sh` は v1 向け
 - `scripts/run_vqa_v2.sh` は v2 向け
 - 最新実験系は `run_vqa_v3.sh`
-
-## 公開時の注意
-
-- `data/` と `output/` は大容量のため、このリポジトリでは通常コミットしません（`.gitignore` で除外）。
-- APIキーはファイルに保存せず、`OPENAI_API_KEY` 環境変数または `--api-key` 引数で渡してください。
-- 公開用には、データの取得方法を README に記載し、必要なら別途配布先（Kaggle/Drive等）を使ってください。
